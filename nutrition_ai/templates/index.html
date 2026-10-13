@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🥗 Nutrition Agentic AI — IBM Granite</title>
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, #1a2e1a 0%, #0d2340 50%, #1a1a2e 100%);
+      border-bottom: 1px solid #30363d;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .header-logo {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, #22c55e, #3b82f6);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+    .header-title { font-size: 1.2rem; font-weight: 700; color: #fff; }
+    .header-sub { font-size: 0.75rem; color: #7c8591; }
+    .header-badge {
+      background: #1c2d1c;
+      border: 1px solid #22c55e33;
+      color: #4ade80;
+      font-size: 0.72rem;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+
+    /* ── Layout ── */
+    .app-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 16px;
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 24px;
+    }
+    @media (max-width: 900px) {
+      .app-container { grid-template-columns: 1fr; }
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .card-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #30363d;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #0d1117;
+    }
+    .card-header-icon {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+    .icon-green { background: #1c2d1c; }
+    .icon-blue  { background: #0d2340; }
+    .icon-purple{ background: #1a1a2e; }
+    .card-header h2 { font-size: 1rem; font-weight: 600; }
+    .card-body { padding: 20px; }
+
+    /* ── Form ── */
+    .form-group { margin-bottom: 16px; }
+    label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #8b949e;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    input, select, textarea {
+      width: 100%;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      color: #e6edf3;
+      font-size: 0.9rem;
+      padding: 10px 14px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+      font-family: inherit;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: #22c55e;
+      box-shadow: 0 0 0 3px #22c55e22;
+    }
+    select option { background: #161b22; }
+    textarea { resize: vertical; min-height: 80px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* ── Checkboxes ── */
+    .checkbox-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .checkbox-item:hover { border-color: #22c55e44; background: #1c2d1c22; }
+    .checkbox-item input[type="checkbox"] {
+      width: 16px; height: 16px;
+      accent-color: #22c55e;
+      cursor: pointer;
+    }
+    .checkbox-label { font-size: 0.85rem; color: #c9d1d9; cursor: pointer; }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 20px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #fff;
+      width: 100%;
+    }
+    .btn-primary:hover { background: linear-gradient(135deg, #16a34a, #15803d); transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-secondary {
+      background: #21262d;
+      color: #c9d1d9;
+      border: 1px solid #30363d;
+    }
+    .btn-secondary:hover { background: #30363d; }
+    .btn-sm { padding: 7px 14px; font-size: 0.82rem; }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #30363d;
+      background: #0d1117;
+      padding: 0 20px;
+    }
+    .tab {
+      padding: 12px 18px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #8b949e;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+      white-space: nowrap;
+    }
+    .tab.active { color: #22c55e; border-bottom-color: #22c55e; }
+    .tab:hover:not(.active) { color: #c9d1d9; }
+    .tab-content { display: none; padding: 20px; }
+    .tab-content.active { display: block; }
+
+    /* ── Results Panel ── */
+    #plan-output {
+      font-size: 0.88rem;
+      line-height: 1.7;
+      color: #c9d1d9;
+    }
+    #plan-output h1 { font-size: 1.4rem; color: #4ade80; margin-bottom: 8px; }
+    #plan-output h2 { font-size: 1.1rem; color: #60a5fa; margin: 20px 0 8px; border-bottom: 1px solid #30363d; padding-bottom: 6px; }
+    #plan-output h3 { font-size: 0.95rem; color: #a78bfa; margin: 14px 0 6px; }
+    #plan-output h4 { font-size: 0.88rem; color: #f59e0b; margin: 12px 0 4px; }
+    #plan-output table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.84rem; }
+    #plan-output th { background: #21262d; color: #8b949e; padding: 8px 12px; text-align: left; border: 1px solid #30363d; font-size: 0.78rem; text-transform: uppercase; }
+    #plan-output td { padding: 8px 12px; border: 1px solid #30363d; vertical-align: top; }
+    #plan-output tr:nth-child(even) td { background: #0d111780; }
+    #plan-output blockquote { border-left: 3px solid #f59e0b; padding: 8px 16px; background: #1a150d; border-radius: 0 8px 8px 0; margin: 10px 0; color: #fbbf24; font-size: 0.85rem; }
+    #plan-output hr { border: none; border-top: 1px solid #30363d; margin: 20px 0; }
+    #plan-output ul { padding-left: 20px; }
+    #plan-output li { margin-bottom: 4px; }
+    #plan-output strong { color: #e6edf3; }
+    #plan-output em { color: #8b949e; }
+    #plan-output code { background: #21262d; padding: 2px 6px; border-radius: 4px; font-size: 0.82em; color: #79c0ff; }
+
+    /* ── Chat ── */
+    .chat-messages {
+      height: 340px;
+      overflow-y: auto;
+      padding: 12px;
+      background: #0d1117;
+      border-radius: 8px;
+      border: 1px solid #30363d;
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .chat-message {
+      display: flex;
+      gap: 10px;
+      max-width: 90%;
+    }
+    .chat-message.user { align-self: flex-end; flex-direction: row-reverse; }
+    .chat-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .avatar-ai { background: linear-gradient(135deg, #22c55e, #3b82f6); }
+    .avatar-user { background: linear-gradient(135deg, #7c5cd8, #a855f7); }
+    .chat-bubble {
+      background: #21262d;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 0.86rem;
+      line-height: 1.5;
+      max-width: 100%;
+    }
+    .chat-message.user .chat-bubble {
+      background: #1c2d1c;
+      border-color: #22c55e33;
+    }
+    .chat-input-row {
+      display: flex;
+      gap: 10px;
+    }
+    .chat-input-row input {
+      flex: 1;
+    }
+    .quick-questions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .quick-q {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 0.78rem;
+      color: #8b949e;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .quick-q:hover { border-color: #22c55e55; color: #4ade80; background: #1c2d1c22; }
+
+    /* ── Spinner ── */
+    .spinner {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2px solid #ffffff44;
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Loading Overlay ── */
+    .loading-overlay {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .loading-overlay.active { display: block; }
+    .loading-steps { margin-top: 20px; }
+    .loading-step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      color: #8b949e;
+      font-size: 0.85rem;
+      transition: color 0.3s;
+    }
+    .loading-step.done { color: #4ade80; }
+    .loading-step.active { color: #60a5fa; }
+    .step-icon { font-size: 16px; width: 20px; }
+
+    /* ── Stats ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .stat-card {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+    }
+    .stat-value { font-size: 1.4rem; font-weight: 700; color: #4ade80; }
+    .stat-label { font-size: 0.72rem; color: #8b949e; text-transform: uppercase; margin-top: 2px; }
+
+    /* ── Status messages ── */
+    .alert {
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      margin-bottom: 16px;
+    }
+    .alert-success { background: #1c2d1c; border: 1px solid #22c55e44; color: #4ade80; }
+    .alert-error   { background: #2d1c1c; border: 1px solid #ef444444; color: #f87171; }
+    .alert-info    { background: #0d2340; border: 1px solid #3b82f644; color: #60a5fa; }
+
+    /* ── Empty state ── */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #8b949e;
+    }
+    .empty-state-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
+    .empty-state h3 { font-size: 1.1rem; margin-bottom: 8px; color: #c9d1d9; }
+    .empty-state p { font-size: 0.85rem; }
+
+    /* ── Saved Plans ── */
+    .plan-list-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      font-size: 0.85rem;
+    }
+    .plan-list-item:hover { border-color: #22c55e33; }
+    .plan-filename { color: #c9d1d9; font-family: monospace; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #484f58;
+      font-size: 0.78rem;
+      border-top: 1px solid #21262d;
+      margin-top: 40px;
+    }
+    .ethics-banner {
+      background: #1a1a2e;
+      border: 1px solid #7c5cd822;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.78rem;
+      color: #8b949e;
+      margin-bottom: 16px;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header>
+  <div class="header-brand">
+    <div class="header-logo">🥗</div>
+    <div>
+      <div class="header-title">Nutrition Agentic AI</div>
+      <div class="header-sub">Personalized plans powered by IBM Granite LLM</div>
+    </div>
+  </div>
+  <div class="header-badge">🤖 IBM Granite</div>
+</header>
+
+<!-- ── Main App ── -->
+<div class="app-container">
+
+  <!-- LEFT PANEL: Profile Form -->
+  <aside>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-icon icon-green">👤</div>
+        <h2>User Profile</h2>
+      </div>
+      <div class="card-body">
+        <div class="ethics-banner">
+          🔒 <span>Your data is used only to generate your nutrition plan. We follow AI ethics and privacy guidelines.</span>
+        </div>
+
+        <div class="form-group">
+          <label>Full Name *</label>
+          <input type="text" id="name" placeholder="e.g. Priya Sharma" maxlength="100" />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Age *</label>
+            <input type="number" id="age" placeholder="e.g. 32" min="1" max="120" />
+          </div>
+          <div class="form-group">
+            <label>Diet *</label>
+            <select id="diet_preference">
+              <option value="">Select...</option>
+              <option value="Vegetarian">🥦 Vegetarian</option>
+              <option value="Non-Vegetarian">🍗 Non-Vegetarian</option>
+              <option value="Vegan">🌱 Vegan</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Medical History</label>
+          <div class="checkbox-group">
+            <label class="checkbox-item">
+              <input type="checkbox" class="medical-check" value="Diabetes" />
+              <span class="checkbox-label">🩸 Diabetes</span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" class="medical-check" value="Blood Pressure" />
+              <span class="checkbox-label">❤️ Blood Pressure</span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" class="medical-check" value="Heart Disease" />
+              <span class="checkbox-label">💓 Heart Disease</span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" class="medical-check" value="Thyroid" />
+              <span class="checkbox-label">🦋 Thyroid</span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" class="medical-check" value="Kidney Issues" />
+              <span class="checkbox-label">🫘 Kidney Issues</span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" class="medical-check" value="None" id="noCondition" />
+              <span class="checkbox-label">✅ None</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>City *</label>
+            <input type="text" id="city" placeholder="e.g. Mumbai" maxlength="100" />
+          </div>
+          <div class="form-group">
+            <label>Country *</label>
+            <input type="text" id="country" placeholder="e.g. India" maxlength="100" />
+          </div>
+        </div>
+
+        <button class="btn btn-primary" id="generateBtn" onclick="generatePlan()">
+          <span id="btnText">✨ Generate My Plan</span>
+          <span id="btnSpinner" class="spinner" style="display:none"></span>
+        </button>
+
+        <div id="form-error" class="alert alert-error" style="display:none; margin-top:12px;"></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- RIGHT PANEL: Results -->
+  <main>
+    <div class="card">
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('plan')">📋 Nutrition Plan</div>
+        <div class="tab" onclick="switchTab('chat')">💬 Ask NutriGuide AI</div>
+        <div class="tab" onclick="switchTab('saved')">📁 Saved Plans</div>
+      </div>
+
+      <!-- Plan Tab -->
+      <div id="tab-plan" class="tab-content active">
+
+        <!-- Loading State -->
+        <div id="loadingOverlay" class="loading-overlay">
+          <div style="font-size:40px; margin-bottom:12px;">🧠</div>
+          <div style="font-size:1rem; color:#60a5fa; font-weight:600;">IBM Granite AI is analyzing your profile...</div>
+          <div class="loading-steps" id="loadingSteps">
+            <div class="loading-step" id="step1"><span class="step-icon">👤</span> Collecting user profile</div>
+            <div class="loading-step" id="step2"><span class="step-icon">🏥</span> Analyzing medical history</div>
+            <div class="loading-step" id="step3"><span class="step-icon">📊</span> Calculating nutritional needs</div>
+            <div class="loading-step" id="step4"><span class="step-icon">🤖</span> IBM Granite generating plan</div>
+            <div class="loading-step" id="step5"><span class="step-icon">🛡️</span> Applying AI guardrails</div>
+            <div class="loading-step" id="step6"><span class="step-icon">💾</span> Saving your plan</div>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state">
+          <div class="empty-state-icon">🥗</div>
+          <h3>Your personalized plan will appear here</h3>
+          <p>Fill in your profile on the left and click<br/>"Generate My Plan" to get started.</p>
+        </div>
+
+        <!-- Plan Output -->
+        <div id="planResult" style="display:none;">
+          <div class="stats-grid" id="statsGrid"></div>
+          <div style="display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap;">
+            <button class="btn btn-secondary btn-sm" onclick="downloadPlan()">⬇️ Download .md</button>
+            <button class="btn btn-secondary btn-sm" onclick="printPlan()">🖨️ Print</button>
+            <button class="btn btn-secondary btn-sm" onclick="copyPlan()">📋 Copy Text</button>
+            <span id="savedBadge" style="display:none;" class="alert alert-success" style="padding:4px 10px; margin:0; font-size:0.78rem;">✅ Saved!</span>
+          </div>
+          <div id="plan-output"></div>
+        </div>
+      </div>
+
+      <!-- Chat Tab -->
+      <div id="tab-chat" class="tab-content">
+        <div id="chatMessages" class="chat-messages">
+          <div class="chat-message">
+            <div class="chat-avatar avatar-ai">🤖</div>
+            <div class="chat-bubble">
+              <strong>NutriGuide AI</strong><br/>
+              Hello! I'm your nutrition assistant powered by IBM Granite. Ask me anything about nutrition, healthy eating, or how to manage your diet. I'm here to help! 🥗
+            </div>
+          </div>
+        </div>
+
+        <div class="quick-questions">
+          <span class="quick-q" onclick="askQuick('What foods are good for diabetes?')">🩸 Foods for diabetes?</span>
+          <span class="quick-q" onclick="askQuick('How much protein do I need daily?')">💪 Daily protein needs?</span>
+          <span class="quick-q" onclick="askQuick('What is the DASH diet?')">❤️ What is DASH diet?</span>
+          <span class="quick-q" onclick="askQuick('How can I stay hydrated?')">💧 Hydration tips?</span>
+          <span class="quick-q" onclick="askQuick('Best breakfast for weight management?')">🌅 Best breakfast?</span>
+          <span class="quick-q" onclick="askQuick('What vitamins should vegetarians take?')">🥦 Veg vitamins?</span>
+        </div>
+
+        <div class="chat-input-row">
+          <input type="text" id="chatInput" placeholder="Ask a nutrition question..." 
+                 onkeypress="if(event.key==='Enter') sendChat()" maxlength="500" />
+          <button class="btn btn-primary btn-sm" style="width:auto; white-space:nowrap;" onclick="sendChat()">
+            Send <span id="chatSpinner" class="spinner" style="display:none"></span>
+          </button>
+        </div>
+        <div style="font-size:0.75rem; color:#484f58; margin-top:8px;">
+          ⚕️ Answers are for informational purposes only. Always consult a healthcare professional.
+        </div>
+      </div>
+
+      <!-- Saved Plans Tab -->
+      <div id="tab-saved" class="tab-content">
+        <button class="btn btn-secondary btn-sm" onclick="loadSavedPlans()" style="margin-bottom:16px;">
+          🔄 Refresh List
+        </button>
+        <div id="savedPlansList">
+          <div class="empty-state" style="padding:30px 0;">
+            <div class="empty-state-icon" style="font-size:32px;">📁</div>
+            <p>Click Refresh to load saved plans</p>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end card -->
+  </main>
+</div>
+
+<footer>
+  🥗 Nutrition Agentic AI &nbsp;|&nbsp; Powered by IBM Granite LLM &nbsp;|&nbsp;
+  AI Ethics &amp; Safety Guardrails Applied &nbsp;|&nbsp; Not a substitute for medical advice
+</footer>
+
+<!-- ── JavaScript ── -->
+<script>
+  // ── State ──
+  let currentPlanMarkdown = '';
+  let currentProfile = {};
+  let currentSavedFile = '';
+
+  // ── Tab switching ──
+  function switchTab(name) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    event.target.classList.add('active');
+    if (name === 'saved') loadSavedPlans();
+  }
+
+  // ── Collect medical history ──
+  function getMedicalHistory() {
+    const checks = document.querySelectorAll('.medical-check:checked');
+    if (checks.length === 0) return 'None reported';
+    const vals = Array.from(checks).map(c => c.value);
+    if (vals.includes('None') && vals.length === 1) return 'None';
+    return vals.filter(v => v !== 'None').join(', ') || 'None';
+  }
+
+  // ── Validate form ──
+  function validateForm() {
+    const name = document.getElementById('name').value.trim();
+    const age = document.getElementById('age').value;
+    const diet = document.getElementById('diet_preference').value;
+    const city = document.getElementById('city').value.trim();
+    const country = document.getElementById('country').value.trim();
+
+    if (!name) return 'Please enter your full name.';
+    if (!age || parseInt(age) < 1 || parseInt(age) > 120) return 'Please enter a valid age (1–120).';
+    if (!diet) return 'Please select your diet preference.';
+    if (!city) return 'Please enter your city.';
+    if (!country) return 'Please enter your country.';
+    return null;
+  }
+
+  // ── Generate Plan ──
+  async function generatePlan() {
+    const errMsg = validateForm();
+    if (errMsg) {
+      showFormError(errMsg);
+      return;
+    }
+    hideFormError();
+
+    const profile = {
+      name: document.getElementById('name').value.trim(),
+      age: document.getElementById('age').value,
+      diet_preference: document.getElementById('diet_preference').value,
+      medical_history: getMedicalHistory(),
+      city: document.getElementById('city').value.trim(),
+      country: document.getElementById('country').value.trim()
+    };
+    currentProfile = profile;
+
+    // UI: loading state
+    setGenerating(true);
+    document.getElementById('emptyState').style.display = 'none';
+    document.getElementById('planResult').style.display = 'none';
+    document.getElementById('loadingOverlay').classList.add('active');
+
+    // Animate loading steps
+    animateSteps();
+
+    try {
+      const response = await fetch('/api/generate-plan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(profile)
+      });
+      const data = await response.json();
+
+      document.getElementById('loadingOverlay').classList.remove('active');
+
+      if (data.status === 'success') {
+        currentPlanMarkdown = data.plan_markdown;
+        currentSavedFile = data.saved_file || '';
+
+        // Show stats
+        const cn = data.caloric_needs || {};
+        const conditions = data.conditions_detected || [];
+        renderStats(cn, conditions);
+
+        // Render markdown
+        document.getElementById('plan-output').innerHTML = markdownToHtml(currentPlanMarkdown);
+        document.getElementById('planResult').style.display = 'block';
+        if (currentSavedFile) document.getElementById('savedBadge').style.display = 'inline-flex';
+
+        // Switch to plan tab
+        document.getElementById('tab-plan').style.display = 'block';
+      } else {
+        document.getElementById('emptyState').style.display = 'block';
+        showFormError(data.message || 'Failed to generate plan.');
+      }
+    } catch (err) {
+      document.getElementById('loadingOverlay').classList.remove('active');
+      document.getElementById('emptyState').style.display = 'block';
+      showFormError('Connection error. Make sure the server is running.');
+    } finally {
+      setGenerating(false);
+    }
+  }
+
+  // ── Loading steps animation ──
+  function animateSteps() {
+    const steps = ['step1','step2','step3','step4','step5','step6'];
+    let i = 0;
+    const interval = setInterval(() => {
+      if (i > 0) document.getElementById(steps[i-1]).classList.replace('active','done');
+      if (i < steps.length) {
+        document.getElementById(steps[i]).classList.add('active');
+        i++;
+      } else {
+        clearInterval(interval);
+      }
+    }, 600);
+  }
+
+  // ── Render stats ──
+  function renderStats(cn, conditions) {
+    const condLabel = conditions.length > 0 ? conditions.join(', ') : 'None';
+    document.getElementById('statsGrid').innerHTML = `
+      <div class="stat-card"><div class="stat-value">${cn.daily_calories || '–'}</div><div class="stat-label">Calories/day</div></div>
+      <div class="stat-card"><div class="stat-value">${cn.protein_g || '–'}g</div><div class="stat-label">Protein</div></div>
+      <div class="stat-card"><div class="stat-value">${cn.fat_g || '–'}g</div><div class="stat-label">Healthy Fat</div></div>
+    `;
+  }
+
+  // ── Simple Markdown → HTML renderer ──
+  function markdownToHtml(md) {
+    if (!md) return '';
+    let html = md
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/^#### (.+)$/gm, '<h4>$1</h4>')
+      .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+      .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+      .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      .replace(/`(.+?)`/g, '<code>$1</code>')
+      .replace(/^---$/gm, '<hr/>')
+      .replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>')
+      .replace(/^\| (.+) \|$/gm, (m) => {
+        const cells = m.split('|').filter(c => c.trim());
+        return '<tr>' + cells.map(c => `<td>${c.trim()}</td>`).join('') + '</tr>';
+      })
+      .replace(/^- (.+)$/gm, '<li>$1</li>')
+      .replace(/(<li>.*<\/li>\n?)+/g, s => `<ul>${s}</ul>`)
+      .replace(/(<tr>.*<\/tr>\n?)+/g, s => `<table><thead>${s.split('\n')[0]}</thead><tbody>${s.split('\n').slice(1).join('\n')}</tbody></table>`)
+      .replace(/\n\n/g, '<br/><br/>')
+      .replace(/\n/g, '\n');
+    return html;
+  }
+
+  // ── Chat ──
+  async function sendChat() {
+    const input = document.getElementById('chatInput');
+    const query = input.value.trim();
+    if (!query) return;
+
+    appendMessage('user', query);
+    input.value = '';
+    document.getElementById('chatSpinner').style.display = 'inline-block';
+
+    try {
+      const response = await fetch('/api/query', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query, profile: currentProfile })
+      });
+      const data = await response.json();
+      appendMessage('ai', data.answer || data.message || 'Sorry, I could not process that.');
+    } catch (err) {
+      appendMessage('ai', '⚠️ Connection error. Please check the server.');
+    } finally {
+      document.getElementById('chatSpinner').style.display = 'none';
+    }
+  }
+
+  function askQuick(q) {
+    document.getElementById('chatInput').value = q;
+    sendChat();
+  }
+
+  function appendMessage(role, text) {
+    const container = document.getElementById('chatMessages');
+    const div = document.createElement('div');
+    div.className = `chat-message ${role === 'user' ? 'user' : ''}`;
+    div.innerHTML = `
+      <div class="chat-avatar ${role === 'user' ? 'avatar-user' : 'avatar-ai'}">${role === 'user' ? '👤' : '🤖'}</div>
+      <div class="chat-bubble">${text.replace(/\n/g, '<br/>')}</div>`;
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  // ── Saved Plans ──
+  async function loadSavedPlans() {
+    const container = document.getElementById('savedPlansList');
+    container.innerHTML = '<div style="color:#8b949e; padding:10px;">Loading...</div>';
+    try {
+      const res = await fetch('/api/plans');
+      const data = await res.json();
+      if (data.plans && data.plans.length > 0) {
+        container.innerHTML = data.plans.map(f => `
+          <div class="plan-list-item">
+            <span class="plan-filename">📄 ${f}</span>
+            <button class="btn btn-secondary btn-sm" onclick="viewPlan('${f}')">View</button>
+          </div>`).join('');
+      } else {
+        container.innerHTML = '<div style="color:#8b949e; padding:20px; text-align:center;">No saved plans yet. Generate your first plan!</div>';
+      }
+    } catch { container.innerHTML = '<div style="color:#f87171;">Error loading plans.</div>'; }
+  }
+
+  async function viewPlan(filename) {
+    try {
+      const res = await fetch(`/api/plans/${filename}`);
+      const data = await res.json();
+      if (data.status === 'success') {
+        currentPlanMarkdown = data.content;
+        document.getElementById('plan-output').innerHTML = markdownToHtml(data.content);
+        document.getElementById('planResult').style.display = 'block';
+        document.getElementById('emptyState').style.display = 'none';
+        switchTabDirect('plan');
+      }
+    } catch { alert('Error loading plan.'); }
+  }
+
+  function switchTabDirect(name) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    document.querySelectorAll('.tab')[0].classList.add('active');
+  }
+
+  // ── Download ──
+  function downloadPlan() {
+    if (!currentPlanMarkdown) return alert('No plan to download.');
+    const name = currentProfile.name ? currentProfile.name.replace(/\s+/g,'_').toLowerCase() : 'user';
+    const ts = new Date().toISOString().slice(0,10);
+    const blob = new Blob([currentPlanMarkdown], { type: 'text/markdown' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `nutrition_plan_${name}_${ts}.md`;
+    a.click();
+  }
+
+  function printPlan() {
+    window.print();
+  }
+
+  function copyPlan() {
+    navigator.clipboard.writeText(currentPlanMarkdown).then(() => {
+      alert('Plan copied to clipboard!');
+    });
+  }
+
+  // ── UI helpers ──
+  function setGenerating(loading) {
+    document.getElementById('generateBtn').disabled = loading;
+    document.getElementById('btnText').textContent = loading ? 'Generating...' : '✨ Generate My Plan';
+    document.getElementById('btnSpinner').style.display = loading ? 'inline-block' : 'none';
+    // Reset step classes
+    for (let i = 1; i <= 6; i++) {
+      const el = document.getElementById('step' + i);
+      el.classList.remove('active','done');
+    }
+  }
+
+  function showFormError(msg) {
+    const el = document.getElementById('form-error');
+    el.textContent = '⚠️ ' + msg;
+    el.style.display = 'block';
+  }
+
+  function hideFormError() {
+    document.getElementById('form-error').style.display = 'none';
+  }
+
+  // "None" checkbox logic
+  document.getElementById('noCondition').addEventListener('change', function() {
+    if (this.checked) {
+      document.querySelectorAll('.medical-check').forEach(c => {
+        if (c !== this) c.checked = false;
+      });
+    }
+  });
+  document.querySelectorAll('.medical-check').forEach(c => {
+    if (c.id !== 'noCondition') {
+      c.addEventListener('change', function() {
+        if (this.checked) document.getElementById('noCondition').checked = false;
+      });
+    }
+  });
+</script>
+</body>
+</html>

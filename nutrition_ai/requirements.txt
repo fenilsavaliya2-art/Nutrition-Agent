@@ -1,0 +1,36 @@
+# =============================================================
+#  Nutrition Agentic AI — Python Dependencies
+#  Install: pip install -r requirements.txt
+#
+#  Python 3.9+ required  |  Python 3.14 tested
+# =============================================================
+
+# ── Web Framework ────────────────────────────────────────────
+flask==3.0.3
+flask-cors==4.0.1
+
+# ── HTTP & Utilities ─────────────────────────────────────────
+requests==2.32.3
+python-dotenv==1.0.1
+markdown==3.6
+
+# ── IBM watsonx.ai SDK (IBM Granite LLM) ─────────────────────
+# NOTE: ibm-watsonx-ai requires a C compiler on Python 3.14+
+# because it depends on pandas/numpy from source.
+# Options:
+#   A) Python 3.9–3.12 (recommended): uncomment the line below
+#      ibm-watsonx-ai==1.1.2
+#   B) Python 3.13+: install pre-built numpy wheel first:
+#      pip install numpy --only-binary=:all:
+#      pip install ibm-watsonx-ai==1.1.2
+#   C) Demo mode (no IBM API key): no extra install needed —
+#      the app automatically falls back to demo responses.
+#
+# Uncomment when using Python 3.9–3.12 or after numpy is ready:
+# ibm-watsonx-ai==1.1.2
+
+# ── Transitive / Flask stack ─────────────────────────────────
+Werkzeug>=3.0.3
+Jinja2>=3.1.4
+itsdangerous>=2.2.0
+click>=8.1.7

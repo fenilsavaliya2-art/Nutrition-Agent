@@ -1,0 +1,3 @@
+# Root-level requirements file — delegates to nutrition_ai/requirements.txt
+# Usage from repo root:  pip install -r requirements.txt
+-r nutrition_ai/requirements.txt
